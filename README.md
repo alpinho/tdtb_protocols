@@ -1,2 +1,2 @@
-# tdtb_protocols
-Behavioral Protocols of the Timing Domain Task Battery (TDTB) 
+# TDTB Protocols
+Behavioral Protocols of the *Timing Domain Task Battery* (TDTB) 
