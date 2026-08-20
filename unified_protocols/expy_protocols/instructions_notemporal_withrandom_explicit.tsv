@@ -1,0 +1,27 @@
+tag	text
+	"To read these instructions, press the ""Right Arrow"" key or ""Enter"" to move forward and the ""Left Arrow"" key to move backwards."
+	In these tasks, you will be presented with pairs of events. \n\n For one task, the events will be auditory. \n For the other task, the events will be visual.
+	A pair of events can thus refer to the playing of two consecutive audio beeps or the display of two consecutive rectangle flashes.
+	"Here you have an example for the auditory task. \n\n Press ""Right Arrow"" key or ""Enter"" to listen."
+beep_iso	A pair of beeps for the auditory task.
+	"Here you have an example for the visual task. \n\n Press ""Right Arrow"" key or ""Enter"" to watch."
+flash_iso	A pair of flashes for the visual task.
+	Both tasks will start with the presentation of TWO pairs of events with a short interval between them.
+	"Here you have an example for the auditory task. \n\n Press ""Right Arrow"" key or ""Enter"" to listen."
+beep_beat	Two pair of beeps for the auditory task.
+	"Here you have an example for the visual task. \n\n Press ""Right Arrow"" key or ""Enter"" to watch."
+flash_beat	Two pair of flashes for the visual task.
+	After another short interval, you will be presented with a THIRD PAIR. \n\n For the audio task, the first beep of this third pair will be the same as those from the first two pairs but the second beep can be higher or lower in pitch. For the visual task, the first flash will be a rectangle as previously, whereas the second flash can be either a circle or a triangle.
+	You will be then prompted to press either the button ''o'' or ''p'' AS FAST AS POSSIBLE, depending whether the last beep/shape was high/circle or low/triangle, respectively.
+trial_ntfd_audio	"Let’s try. \n\n Press ""Right Arrow"" key or ""Enter"" to start the auditory example."
+trial_ntfd_visual	"And now press ""Right Arrow"" key or ""Enter"" to start the visual example."
+	Note that the two intervals BETWEEN the first two pairs are larger than within pairs.
+trial_ntfd_audio_beat	"Sometimes these intervals between pairs will be exactly 3X larger than the two intervals within pairs. We call it a “Beat” trial because you may perceive an underlying regularity. \n\n Press ""Right Arrow"" key or ""Enter"" to listen the Auditory Beat and answer."
+trial_ntfd_visual_beat	"Press now ""Right Arrow"" key or ""Enter"" to watch the Visual Beat and answer."
+	Other times these intervals will be irregular. We call it “Interval” trials.
+	In both cases, after the third pair, respond always as quickly as possible by indicating whether you heard a higher or lower beep, or saw a circular or triangular flash.
+	In these tasks, you will be also presented sometimes with a random sequence of beeps/flashes where the last one changes in pitch/shape as described before. \n\n Your task is the same as in the previous cases, i.e. to answer always AS FAST AS POSSIBLE whether the last beep/shape was high/circle or low/triangle by pressing respectively ''o'' or ''p''.
+	Keep your eyes on the dark-gray fixation cross displayed at the center of the screen while performing the tasks.
+	This sequence will be repeated several times for a couple of minutes. \n\n There will be no pause during this period.
+	Rest periods of variable length between sequences will be cued with a black fixation cross. \n\n During this time, keep looking to the fixation cross and wait for the presentation of the next sequence.
+	"If you have any questions, do not hesitate to ask. \n A short training session will follow, during which Beat trials are explicitly marked. However, they will not appear in the main sessions. \n\n Good luck! \n\n\n Note: To read these instructions again from the beginning, press ""Backspace"". To read the slides back, keep pressing the ""Left Arrow"" key."

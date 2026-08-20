@@ -1,0 +1,6 @@
+onsets	trial_number	trial_id	isi_1	isi_2	isi_3	isi_4	isi_5	target_shape
+3008	1	beat01	459	1377	459	1377	459	beep_220hz
+12559	2	beat03	561	1683	561	1683	561	beep_880hz
+21192	3	interval02	510	1547	510	1513	510	beep_880hz
+29366	4	beat05	663	1989	663	1989	663	beep_220hz
+38917	5	interval01	459	1632	459	1122	459	beep_220hz

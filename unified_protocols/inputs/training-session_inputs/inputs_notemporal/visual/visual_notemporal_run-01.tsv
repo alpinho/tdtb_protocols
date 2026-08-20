@@ -1,0 +1,6 @@
+onsets	trial_number	trial_id	isi_1	isi_2	isi_3	isi_4	isi_5	target_shape
+0	1	beat03	561	1683	561	1683	561	circle
+8633	2	random20	1376	1224	704	2000	663	triangle
+18184	3	beat01	459	1377	459	1377	459	circle
+25899	4	beat02	510	1530	510	1530	510	triangle
+34073	5	interval02	510	1768	510	1292	510	circle

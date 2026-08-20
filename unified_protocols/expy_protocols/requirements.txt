@@ -1,0 +1,10 @@
+python==3.7.11
+Future==0.18.2
+Pygame==1.9.6
+PyOpenGL==3.1.7
+Numpy==1.21.5
+mediadecoder==0.1.5
+sounddevice==0.4.4
+Pyserial==3.5
+PyParallel==0.2.2
+configobj==5.0.6 
