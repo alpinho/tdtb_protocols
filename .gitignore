@@ -1,3 +1,5 @@
 .DS_Store
 unified_protocols/.DS_Store
 unified_protocols/pp_protocols/.DS_Store
+__pycache__/
+*.pyc

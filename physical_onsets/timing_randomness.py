@@ -7,22 +7,38 @@ per-interval timing error reproduces across those repeats. If the jitter is
 fixed it reproduces and could be removed by post-hoc correction; if it is
 random it does not reproduce and cannot.
 
-Two statistics are reported per modality, pooling every within-sequence pair of
-repeats:
+Three statistics are reported per modality:
 
-  test-retest r  Pearson correlation of the per-interval error between two
-                 repeats of the same sequence. Near 0 means the jitter does not
+  ICC(1,1)       One-way random-effects intraclass correlation (one-way ANOVA).
+                 A group is one element of one sequence (sequence x interval
+                 position); its observations are its errors in each recording
+                 of that sequence. Errors with |error| >= ARTEFACT_ABS_MS are
+                 excluded and groups left with a single observation are
+                 dropped. The design is unbalanced, so the group size is
+                 k0 = (N - sum(n_i^2)/N) / (g - 1) for g groups, n_i recordings
+                 in group i and N = sum(n_i). ICC = (MSB - MSW) /
+                 (MSB + (k0 - 1) MSW). Near 0 means the jitter does not
                  reproduce (random); near 1 means it is fixed.
 
-  variance ratio var(error_i - error_j) / mean(var(error_i), var(error_j)).
-                 Near 2 is the signature of independent noise: differencing two
-                 recordings doubles the variance, so a correction would add
-                 noise rather than remove it. Near 0 means the jitter cancels
-                 (fixed).
+  pairwise r     Single-order pairwise Pearson correlation, NOT an ICC. Every
+                 within-sequence pair of repeats is entered once (first repeat
+                 in rep-label order in x, the other in y; labels are sorted as
+                 strings, e.g. april before february, july before june, so this
+                 is not chronological), so the value depends on that order and
+                 sequences with more repeats weigh more. Kept for continuity
+                 with earlier outputs.
+
+  variance ratio var(error_i - error_j) / mean(var(error_i), var(error_j)),
+                 over the same pairs as the pairwise r. Near 2 is the signature
+                 of independent noise: differencing two recordings doubles the
+                 variance, so a correction would add noise rather than remove
+                 it. Near 0 means the jitter cancels (fixed).
 
 The per-interval error is the curated 'error' column (rendered inter-onset
 interval minus its nominal, in ms). Repeats are aligned by interval position
 within each sequence; unmatched or missing positions are dropped pairwise.
+
+Last Update: November 2026
 """
 from itertools import combinations
 from pathlib import Path
@@ -74,6 +90,7 @@ def load_inputs(paths: dict) -> pd.DataFrame:
         d["session"] = session
         frames.append(d)
     df = pd.concat(frames, ignore_index=True)
+    df["task"] = df["task"].astype(str).str.lower()  # one key per sequence
     df[ERROR_COL] = pd.to_numeric(df[ERROR_COL], errors="coerce")
     df["rep"] = df["session"] + "-" + df[MEAS_COL].astype(str)
     df["pos"] = df.groupby(SEQ_KEYS + ["rep"]).cumcount()
@@ -84,8 +101,12 @@ def load_inputs(paths: dict) -> pd.DataFrame:
 # Scope
 # =============================================================================
 def describe_scope(df: pd.DataFrame) -> pd.DataFrame:
-    """Summarize the validation set: sequences, repeats, total recordings."""
-    per_seq = df.groupby(SEQ_KEYS)["rep"].nunique()
+    """Summarize the validation set: sequences, repeats, total recordings.
+
+    Only recordings with data count: a recording (sequence x rep) whose errors
+    are all missing is an empty slot of the curated table, not a recording.
+    """
+    per_seq = df[df[ERROR_COL].notna()].groupby(SEQ_KEYS)["rep"].nunique()
     counts = per_seq.value_counts().sort_index()
     rows = [{"repeats": int(k), "n_sequences": int(v)} for k, v in counts.items()]
     rows.append({"repeats": "total", "n_sequences": int(per_seq.size)})
@@ -121,17 +142,45 @@ def _repeat_pairs(d: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
     return x[keep], y[keep]
 
 
+def _icc11(d: pd.DataFrame) -> dict:
+    """One-way random-effects ICC(1,1) by ANOVA, unbalanced (k0).
+
+    Group = sequence x interval position; observations = its error in each
+    repeat. Errors with |error| >= ARTEFACT_ABS_MS are excluded; groups left
+    with a single observation are dropped.
+    """
+    gkey = SEQ_KEYS + ["pos"]
+    e = d[gkey + ["rep", ERROR_COL]].dropna(subset=[ERROR_COL])
+    e = e[e[ERROR_COL].abs() < ARTEFACT_ABS_MS]
+    e = e[e.groupby(gkey)[ERROR_COL].transform("size") >= 2]
+    grp = e.groupby(gkey)[ERROR_COL]
+    n_i, m_i = grp.size(), grp.mean()
+    g, n = len(n_i), int(n_i.sum())
+    grand = float(e[ERROR_COL].mean())
+    msb = float((n_i * (m_i - grand) ** 2).sum()) / (g - 1)
+    msw = float(((e[ERROR_COL] - grp.transform("mean")) ** 2).sum()) / (n - g)
+    k0 = (n - float((n_i ** 2).sum()) / n) / (g - 1)
+    icc = (msb - msw) / (msb + (k0 - 1) * msw)
+    return {"icc11": icc, "g": g, "N": n, "k0": k0}
+
+
 def randomness_stats(d: pd.DataFrame, modality: str) -> dict:
-    """Test-retest correlation and difference-variance ratio for one modality."""
+    """ICC(1,1), single-order pairwise r and difference-variance ratio."""
     x, y = _repeat_pairs(d)
     var_single = 0.5 * (float(np.var(x)) + float(np.var(y)))
+    icc = _icc11(d)
     return {
         "Modality": modality,
         "N interval pairs": int(x.size),
-        "Test-retest r": round(float(np.corrcoef(x, y)[0, 1]), 3),
+        "Pairwise r (single-order Pearson, not ICC)":
+            round(float(np.corrcoef(x, y)[0, 1]), 3),
         "Var single (ms^2)": round(var_single, 1),
         "Var difference (ms^2)": round(float(np.var(x - y)), 1),
         "Var ratio": round(float(np.var(x - y)) / var_single, 2),
+        "icc11": round(icc["icc11"], 4),
+        "g": icc["g"],
+        "N": icc["N"],
+        "k0": round(icc["k0"], 4),
     }
 
 

@@ -32,7 +32,7 @@ author: Ana Luisa Pinho
 email: agrilopi@uwo.ca
 
 Creation: 29th of June 2026
-Last update: July 2026
+Last update: November 2026
 
 Compatibility: Python 3.10.16
 """
@@ -549,6 +549,7 @@ def main() -> None:
     """Run the duration-deviation and Perception comparison reports."""
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     df, tag_label = load_input_data(TAG, OUT_TAG)
+    df["task"] = df["task"].astype(str).str.lower()  # one key per sequence
     _run_duration_deviations(df, tag_label, OUT_DIR / "duration_deviation")
     _run_comparison(df, tag_label, OUT_DIR / "comparison")
 

@@ -39,7 +39,7 @@ event-coding scheme:
 | --- | --- |
 | `jittering_analysis.py` | How large is the timing error, in ms, and how often does it exceed a fixed threshold? |
 | `rhythm_fidelity.py` | How far does each rendered interval depart from its own nominal, as a proportion of that nominal? |
-| `beat_regularity_analysis.py` | How often does the auditory Beat depart from its nominal structure by more than a perceptually relevant fraction? |
+| `beat_regularity_modality.py` | How often does the auditory or visual Beat depart from its nominal structure (including its S:3S ratio) by more than a perceptually relevant fraction? |
 | `timing_randomness.py` | Does the error reproduce across repeated replays of the same sequence, i.e. could it be corrected post hoc? |
 | `comparison_flip_analysis.py` | In the perception task, does the rendered comparison ever fall on the wrong side of its standard? |
 | `lags.py` | What is the lag between the physical onset of an event and the CPU-time pulse that marks it? |
@@ -50,13 +50,20 @@ were considered and the reasoning behind the one that was kept.
 
 ## Running the scripts
 
-Every script is standalone and takes no command-line arguments. Configure it by editing the
-configuration block at the top of the file, then run it from this directory:
+Every script is standalone and, except `beat_regularity_modality.py`, takes no command-line
+arguments. Configure it by editing the configuration block at the top of the file, then run
+it from this directory:
 
 ```
 python build_theoretical_durations.py
 python curation_st.py
 python jittering_analysis.py
+```
+
+`beat_regularity_modality.py` takes the modality and an existing output directory:
+
+```
+python beat_regularity_modality.py <audio|visual> <out_dir>
 ```
 
 What to edit in each case:
@@ -66,7 +73,7 @@ What to edit in each case:
 | `build_theoretical_durations.py` | `subject`, `session_type`, `session`, `run_number`, `task`, `modality` in the `INPUTS` section. One run per invocation. |
 | `xlsx2tsv.py` | `input_dir`, `xlsx_file`, `out_dir` |
 | `curation_*.py` | `input_dir`, `theoretical_dir`, `output_dir`, and the campaign constants (subject, modalities, expected measurements, output filenames) in the `Inputs` section |
-| `jittering_analysis.py`, `rhythm_fidelity.py`, `beat_regularity_analysis.py`, `comparison_flip_analysis.py` | `TAG` — one key of `INPUT_FILES`, or a list of keys plus an `OUT_TAG` to pool them. `beat_regularity_analysis.py` also takes `MODALITY` and `CONDITION`. |
+| `jittering_analysis.py`, `rhythm_fidelity.py`, `beat_regularity_modality.py`, `comparison_flip_analysis.py` | `TAG` — one key of `INPUT_FILES`, or a list of keys plus an `OUT_TAG` to pool them. `beat_regularity_modality.py` also has `CONDITION` (default `beat`); its modality is given on the command line. |
 | `timing_randomness.py` | `INPUT_FILES` — the curated tables of the sessions to be compared |
 | `lags.py` | `session_name` — one key of `session_configs` |
 

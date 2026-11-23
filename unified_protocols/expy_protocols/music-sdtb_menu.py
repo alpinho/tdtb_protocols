@@ -157,12 +157,16 @@ control.initialize(exp)
 
 menu_options = [setting["instruct_prod"],
                 setting["instruct_prod_explicit"],
+                setting["instruct_prod_explicit_blocks"],
                 setting["instruct_percep"],
                 setting["instruct_percep_explicit"],
+                setting["instruct_percep_explicit_blocks"],
                 setting["instruct_notemp"],
                 setting["instruct_notemp_explicit"],
+                setting["instruct_notemp_explicit_blocks"],
                 setting["instruct_notemp_rand"],
                 setting["instruct_notemp_rand_explicit"],
+                setting["instruct_notemp_rand_explicit_blocks"],
                 setting["prodAV_img"],
                 setting["prodVA_img"],
                 setting["percepAV_img"],
@@ -223,38 +227,58 @@ while True:
         launch_instructions("instructions_production_explicit.tsv",
                             "instructions_config.ini", spec, exp)
 
-    # Launch option: "Instructions for Perception Tasks"
+    # Launch option: "Instructions for Production Tasks with explicit instruction for block design"
     elif selected_option == 2:
+        launch_instructions("instructions_production_explicit_blocks.tsv",
+                            "instructions_config.ini", spec, exp)
+
+    # Launch option: "Instructions for Perception Tasks"
+    elif selected_option == 3:
         launch_instructions("instructions_perception.tsv",
                             "instructions_config.ini", spec, exp)
 
     # Launch option: "Instructions for Perception Tasks with explicit instruction"
-    elif selected_option == 3:
+    elif selected_option == 4:
         launch_instructions("instructions_perception_explicit.tsv",
                             "instructions_config.ini", spec, exp)
 
+    # Launch option: "Instructions for Perception Tasks with explicit instruction for block design"
+    elif selected_option == 5:
+        launch_instructions("instructions_perception_explicit_blocks.tsv",
+                            "instructions_config.ini", spec, exp)
+
     # Launch option: "Instructions for No-Temporal FD Tasks"
-    elif selected_option == 4:
+    elif selected_option == 6:
         launch_instructions("instructions_notemporal.tsv",
                             "instructions_config.ini", spec, exp)
 
     # Launch option: "Instructions for No-Temporal FD Tasks with explicit instruction"
-    elif selected_option == 5:
+    elif selected_option == 7:
         launch_instructions("instructions_notemporal_explicit.tsv",
                             "instructions_config.ini", spec, exp)
 
+    # Launch option: "Instructions for No-Temporal FD Tasks with explicit instruction for block design"
+    elif selected_option == 8:
+        launch_instructions("instructions_notemporal_explicit_blocks.tsv",
+                            "instructions_config.ini", spec, exp)
+
     # Launch option: "Instructions for No-Temporal FD Tasks with Random Condition"
-    elif selected_option == 6:
+    elif selected_option == 9:
         launch_instructions("instructions_notemporal_withrandom.tsv",
                             "instructions_config.ini", spec, exp)
 
     # Launch option: "Instructions for No-Temporal FD Tasks with Random Condition with explicit instruction"
-    elif selected_option == 7:
+    elif selected_option == 10:
         launch_instructions("instructions_notemporal_withrandom_explicit.tsv",
                             "instructions_config.ini", spec, exp)
 
+    # Launch option: "Instructions for No-Temporal FD Tasks with Random Condition with explicit instruction for block design"
+    elif selected_option == 11:
+        launch_instructions("instructions_notemporal_withrandom_explicit_blocks.tsv",
+                            "instructions_config.ini", spec, exp)
+
     # Launch option: "Production Audio/Visual - imaging"
-    elif selected_option == 8:
+    elif selected_option == 12:
         t0 = misc.Clock()
         print('Production')
         sess_aprod, run_aprod, scores, t_end = audio_production(
@@ -265,7 +289,7 @@ while True:
         break
 
     # Launch option: "Production Visual/Audio - imaging"
-    elif selected_option == 9:
+    elif selected_option == 13:
         t0 = misc.Clock()
         print('Production')
         sess_vprod, run_vprod, scores, t_end = visual_production(
@@ -276,7 +300,7 @@ while True:
         break
 
     # Launch option: "Perception Audio/Visual - imaging"
-    elif selected_option == 10:
+    elif selected_option == 14:
         t0 = misc.Clock()
         print('Perception')
         sess_apercep, run_apercep, scores, t_end = audio_perception(
@@ -288,7 +312,7 @@ while True:
         break
 
     # Launch option: "Perception Visual/Audio - imaging"
-    elif selected_option == 11:
+    elif selected_option == 15:
         t0 = misc.Clock()
         print('Perception')
         sess_vpercep, run_vpercep, scores, t_end = visual_perception(
@@ -300,7 +324,7 @@ while True:
         break
 
     # Launch option: "No-Temporal Feature Discrimination Audio/Visual - imaging"
-    elif selected_option == 12:
+    elif selected_option == 16:
         t0 = misc.Clock()
         print('NTFD')
         sess_antfd, run_antfd, scores, t_end = audio_notemporal(
@@ -311,7 +335,7 @@ while True:
         break
 
     # Launch option: "No-Temporal Feature Discrimination Visual/Audio - imaging"
-    elif selected_option == 13:
+    elif selected_option == 17:
         t0 = misc.Clock()
         print('NTFD')
         sess_vntfd, run_vntfd, scores, t_end = visual_notemporal(
@@ -322,75 +346,75 @@ while True:
         break
 
     # Launch option: "Auditory Production - training"
-    elif selected_option == 14:
+    elif selected_option == 18:
         audio_production("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory Production - explicit training"
-    elif selected_option == 15:
+    elif selected_option == 19:
         audio_production_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory Production - behavioral"
-    elif selected_option == 16:
+    elif selected_option == 20:
         audio_production("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Auditory Perception - training"
-    elif selected_option == 17:
+    elif selected_option == 21:
         audio_perception("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory Perception - explicit training"
-    elif selected_option == 18:
+    elif selected_option == 22:
         audio_perception_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory Perception - behavioral"
-    elif selected_option == 19:
+    elif selected_option == 23:
         audio_perception("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Auditory No-Temporal Feature Discrimination - training"
-    elif selected_option == 20:
+    elif selected_option == 24:
         audio_notemporal("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory No-Temporal FD - explicit training"
-    elif selected_option == 21:
+    elif selected_option == 25:
         audio_notemporal_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Auditory No-Temporal Feature Discrimination - behavioral"
-    elif selected_option == 22:
+    elif selected_option == 26:
         audio_notemporal("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Visual Production - training"
-    elif selected_option == 23:
+    elif selected_option == 27:
         visual_production("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual Production - explicit training"
-    elif selected_option == 24:
+    elif selected_option == 28:
         visual_production_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual Production - behavioral"
-    elif selected_option == 25:
+    elif selected_option == 29:
         visual_production("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Visual Perception - training"
-    elif selected_option == 26:
+    elif selected_option == 30:
         visual_perception("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual Perception - explicit training"
-    elif selected_option == 27:
+    elif selected_option == 31:
         visual_perception_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual Perception - behavioral"
-    elif selected_option == 28:
+    elif selected_option == 32:
         visual_perception("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Visual No-Temporal Feature Discrimination - training"
-    elif selected_option == 29:
+    elif selected_option == 33:
         visual_notemporal("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual No-Temporal FD - explicit training"
-    elif selected_option == 30:
+    elif selected_option == 34:
         visual_notemporal_explicit("trainsess_config.ini", spec, exp)
 
     # Launch option: "Visual No-Temporal Feature Discrimination - behavioral"
-    elif selected_option == 31:
+    elif selected_option == 35:
         visual_notemporal("behavsess_config.ini", spec, exp, kind='behavioral')
 
     # Launch option: "Exit"
@@ -407,12 +431,16 @@ while True:
         control.initialize(exp)
         menu_options = [setting["instruct_prod"],
                         setting["instruct_prod_explicit"],
+                        setting["instruct_prod_explicit_blocks"],
                         setting["instruct_percep"],
                         setting["instruct_percep_explicit"],
+                        setting["instruct_percep_explicit_blocks"],
                         setting["instruct_notemp"],
                         setting["instruct_notemp_explicit"],
+                        setting["instruct_notemp_explicit_blocks"],
                         setting["instruct_notemp_rand"],
                         setting["instruct_notemp_rand_explicit"],
+                        setting["instruct_notemp_rand_explicit_blocks"],
                         setting["prodAV_img"],
                         setting["prodVA_img"],
                         setting["percepAV_img"],

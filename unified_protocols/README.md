@@ -6,6 +6,7 @@ The TDTB used the Exypriment and PsychoPy libraries to minimize jitter with the 
 | Script or Directory | Contents |
 | --- | --- |
 | [`script_runner.py`](script_runner.py) | Launching the protocols using a command line interface (CLI) in the order of the session plan found in `inputs/` |
+| [`blocked_input_converter.py`](blocked_input_converter.py) | Converts a subject's behavioural-session inputs to the blocked design (`python blocked_input_converter.py <subject_number>`). Set `baseline_duration = 12000` in `expy_protocols/behavsess_config.ini` before running it, since the onsets are computed from that value |
 | [`inputs/`](inputs) | Stimuli onsets per-trial for each task-type and modality in a given behavioural, imaging, or training session. Also contains the order of tasks for a given session |
 | [`expy_protocols/`](expy_protocols) | Expyriment-coded scripts, to be launched individually via a GUI (`music-sdtb_menu.py`) or continuously via a CLI (`music-sdtb_bauto.py`) in the order of the session plan|
 | [`pp_protocols/`](pp_protocols) | Psychopy-coded scripts, with tasks run individually via GUI or CLI |

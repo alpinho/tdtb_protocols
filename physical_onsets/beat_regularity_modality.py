@@ -2,8 +2,8 @@
 """
 Beat-regularity fidelity for Music-SDTB physical-onsets long-shape tables.
 
-Trial-level assessment of how often the rendered timing of the (critical)
-auditory Beat departed from its nominal structure by more than a perceptual
+Trial-level assessment of how often the rendered timing of the Beat (auditory
+or visual) departed from its nominal structure by more than a perceptual
 amount. Unlike jittering_analysis.py, the threshold is a FRACTION of each
 element's own nominal (Weber's law), not a fixed number of milliseconds, so
 Standards (S) and SOAs (3S) are judged on the same relative scale.
@@ -15,23 +15,37 @@ Two fractions are evaluated:
          which a pulse can no longer be extracted (from a fully sounded, denser
          sequence, so a lenient beat-loss reference here).
 
-Four checks per recording, each flagged when it exceeds f * nominal:
+Five checks per recording. The first four are flagged when they exceed
+f * nominal, the ratio check when its relative deviation exceeds f:
   standard_error         any Standard deviates from its nominal S
   soa_error              any SOA deviates from its nominal 3S
   standard_internal_diff the two Standards differ from each other (range),
                          scaled by S
   soa1_soa2_diff         the two SOAs differ from each other, scaled by 3S
-The first two index accuracy against nominal; the last two index internal
-consistency (regularity), and need no nominal reference beyond the scaling.
+  ratio                  max over all pairs (i, j) of |g_i / s_j - 3| / 3,
+                         every rendered SOA g_i divided by every valid
+                         rendered Standard s_j of the recording (including
+                         the third Standard in NTFD), against the nominal
+                         ratio 3. Needs at least one valid Standard and one
+                         valid SOA.
+The first two index accuracy against nominal; the next two index internal
+consistency (regularity), and need no nominal reference beyond the scaling;
+the ratio indexes the S:3S proportion of the rhythm, whatever the tempo.
+Each check has its own N: recordings for which it is undefined (e.g. fewer
+than two valid Standards for the Standard range) are left out of it.
 
-Restricted to one modality x condition (default auditory Beat). Outputs, per
-fraction and pooled plus per-Standard: a TSV summary, a combined two-fraction
-TSV, and an RTF report.
+Restricted to the Beat condition of one modality, given on the command line
+together with the output directory, which must already exist:
+  python beat_regularity_modality.py <audio|visual> <out_dir>
+Run from physical_onsets/ (input paths are relative). Existing outputs are
+never overwritten. Outputs, per fraction and pooled plus per-Standard: a TSV
+summary, a combined two-fraction TSV, and an RTF report.
 
 author: Ana Luisa Pinho
 email: agrilopi@uwo.ca
 
-Creation: July 2026
+Creation: November 2026
+Last update: November 2026
 Compatibility: Python 3.10.16
 """
 
@@ -51,10 +65,10 @@ OUT_TAG = "expy"  # required when len(TAG) > 1
 
 INPUT_FILES = {"expy1": "curated_data_summer2025/encoding_expy_june2025_long.tsv", "expy2": "curated_data_summer2025/encoding_expy_july2025_long.tsv"}
 
-OUT_DIR = Path("beat_regularity_summer2025")
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+import sys
+OUT_DIR = Path(sys.argv[2])  # must already exist
 
-MODALITY = "audio"  # critical modality
+MODALITY = sys.argv[1]  # audio | visual
 CONDITION = "beat"  # critical condition
 FRACTIONS = [0.05, 0.086]  # Getty discrimination; Madison-Merker pulse loss
 
@@ -114,12 +128,12 @@ def load_input_data(tag_in: str | Sequence[str], out_tag_in: str | None = None) 
 # =============================================================================
 # Core: per-recording flags at a fractional threshold
 # =============================================================================
-CHECKS = [("standard_error", "a Standard deviates from nominal S"), ("soa_error", "an SOA deviates from nominal 3S"), ("standard_internal_diff", "the two Standards disagree"), ("soa1_soa2_diff", "the two SOAs disagree")]
+CHECKS = [("standard_error", "a Standard deviates from nominal S"), ("soa_error", "an SOA deviates from nominal 3S"), ("standard_internal_diff", "the two Standards disagree"), ("soa1_soa2_diff", "the two SOAs disagree"), ("ratio", "an SOA/Standard ratio deviates from 3")]
 
 
 def _recording_table(df_in: pd.DataFrame) -> pd.DataFrame:
-    """One row per recording (auditory Beat), carrying the rendered and nominal
-    Standards and SOAs needed for every check."""
+    """One row per recording (Beat of MODALITY), carrying the rendered and
+    nominal Standards and SOAs needed for every check."""
     df_work = _ensure_measurement(df_in).copy()
     df_work["duration_type"] = df_work["duration_type"].astype(str).str.strip().str.lower()
     df_work["modality"] = df_work["modality"].astype(str).str.lower()
@@ -143,6 +157,7 @@ def _recording_table(df_in: pd.DataFrame) -> pd.DataFrame:
         rec["S"] = S
         rec["std_abs_err"] = np.abs(std_r - std_n)  # array
         rec["std_nom"] = std_n
+        rec["std_r"] = std_r  # rendered valid Standards, for the ratio check
         rec["std_range"] = float(std_r.max() - std_r.min()) if len(std_r) >= 2 else np.nan
         soa_r, soa_n = [], []
         for dt in ("soa1", "soa2"):
@@ -181,6 +196,14 @@ def _flags_at_fraction(rt: pd.DataFrame, f: float) -> pd.DataFrame:
     out["standard_internal_diff"] = rt.apply(std_dis, axis=1)
     out["soa_error"] = rt.apply(soa_off, axis=1)
     out["soa1_soa2_diff"] = rt.apply(soa_dis, axis=1)
+
+    def ratio_off(r):
+        if not r["soa_r"] or len(r["std_r"]) == 0:
+            return np.nan
+        dev = np.abs(np.array([g / s for g in r["soa_r"] for s in r["std_r"]]) - 3.0) / 3.0
+        return bool(dev.max() > f)
+
+    out["ratio"] = rt.apply(ratio_off, axis=1)
     return out
 
 
@@ -258,6 +281,9 @@ def main() -> None:
     pooled, per_std = summarize(rt)
 
     prefix = f"beat_regularity_{MODALITY}-{CONDITION}_{tag_label}"
+    for suf in ("_pooled.tsv", "_by_standard.tsv", "_pooled.rtf"):
+        if (OUT_DIR / f"{prefix}{suf}").exists():
+            raise FileExistsError(OUT_DIR / f"{prefix}{suf}")
     pooled.to_csv(OUT_DIR / f"{prefix}_pooled.tsv", sep="\t", index=False)
     per_std.to_csv(OUT_DIR / f"{prefix}_by_standard.tsv", sep="\t", index=False)
 
